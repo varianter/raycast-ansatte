@@ -28,7 +28,7 @@ export default function Command() {
     }
   }, [error]);
 
-  const offices = ["Trondheim", "Oslo", "Bergen"];
+  const offices = ["Trondheim", "Oslo", "Bergen", "Stockholm"];
 
   return (
     <Grid
