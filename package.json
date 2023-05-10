@@ -5,6 +5,7 @@
   "description": "Viser informasjon om varianter",
   "icon": "command-icon.png",
   "author": "adriansberg",
+  "owner": "variant-as",
   "license": "MIT",
   "commands": [
     {
