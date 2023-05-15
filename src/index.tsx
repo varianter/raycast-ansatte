@@ -63,7 +63,23 @@ export default function Command() {
               subtitle={employee.officeName}
               actions={
                 <ActionPanel>
-                  <Action.CopyToClipboard content={employee.name} />
+                  <Action.CopyToClipboard
+                    content={employee.email}
+                    title="Kopier E-Post Til Utklippstavle"
+                    shortcut={{ modifiers: ["cmd"], key: "e" }}
+                  />
+                  <Action.CopyToClipboard
+                    content={employee.name}
+                    title="Kopier Navn Til Utklippstavle"
+                    shortcut={{ modifiers: ["cmd"], key: "n" }}
+                  />
+                  {employee.telephone ?? (
+                    <Action.CopyToClipboard
+                      content={employee.telephone || ""}
+                      title="Kopier Telefonnummer Til Utklippstavle"
+                      shortcut={{ modifiers: ["cmd"], key: "t" }}
+                    />
+                  )}
                   <ActionPanel.Submenu title="Endre Bildestørrelse">
                     <Action title="Lite" onAction={() => setItemSize(Grid.ItemSize.Small)} />
                     <Action title="Middels" onAction={() => setItemSize(Grid.ItemSize.Medium)} />
