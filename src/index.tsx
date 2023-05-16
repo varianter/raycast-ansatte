@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ActionPanel, Action, Grid, showToast, Toast } from "@raycast/api";
-import { useFetch } from "@raycast/utils";
+import { useCachedState, useFetch } from "@raycast/utils";
 
 type EmployeeItem = {
   name: string;
@@ -12,9 +12,15 @@ type EmployeeItem = {
 
 const BASE_URL = "https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net";
 
+const offices = ["Alle", "Trondheim", "Oslo", "Bergen", "Stockholm"] as const;
+type Office = (typeof offices)[number];
+
+const columnChoices = [3, 4, 5, 6] as const;
+type Columns = (typeof columnChoices)[number];
+
 export default function Command() {
-  const [itemSize, setItemSize] = useState<Grid.ItemSize>(Grid.ItemSize.Large);
-  const [office, setOffice] = useState("all");
+  const [columns, setColumns] = useCachedState<Columns>("columns", 5);
+  const [office, setOffice] = useCachedState<Office>("office", "Alle");
 
   const { data, error, isLoading } = useFetch<{ employees: EmployeeItem[] }>(`${BASE_URL}/employees`);
 
@@ -28,22 +34,18 @@ export default function Command() {
     }
   }, [error]);
 
-  const offices = ["Trondheim", "Oslo", "Bergen", "Stockholm"];
-
   return (
     <Grid
-      itemSize={itemSize}
+      columns={columns}
       inset={Grid.Inset.Large}
       isLoading={isLoading}
       searchBarAccessory={
         <Grid.Dropdown
           tooltip="Velg kontor"
           onChange={(newValue) => {
-            setOffice(newValue);
+            setOffice(newValue as Office);
           }}
         >
-          <Grid.Dropdown.Item title={"Alle"} value={"all"} />
-
           {offices.map((office) => (
             <Grid.Dropdown.Item title={office} value={office} key={office} />
           ))}
@@ -53,7 +55,7 @@ export default function Command() {
       {!isLoading &&
         data?.employees
           .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((employee) => (office === "all" ? true : employee.officeName === office))
+          .filter((employee) => (office === "Alle" ? true : employee.officeName === office))
           .map((employee) => (
             <Grid.Item
               key={employee.name}
@@ -73,17 +75,17 @@ export default function Command() {
                     title="Kopier Navn Til Utklippstavle"
                     shortcut={{ modifiers: ["cmd"], key: "n" }}
                   />
-                  {employee.telephone ?? (
+                  {employee.telephone != null && (
                     <Action.CopyToClipboard
                       content={employee.telephone || ""}
                       title="Kopier Telefonnummer Til Utklippstavle"
                       shortcut={{ modifiers: ["cmd"], key: "t" }}
                     />
                   )}
-                  <ActionPanel.Submenu title="Endre Bildestørrelse">
-                    <Action title="Lite" onAction={() => setItemSize(Grid.ItemSize.Small)} />
-                    <Action title="Middels" onAction={() => setItemSize(Grid.ItemSize.Medium)} />
-                    <Action title="Stort" onAction={() => setItemSize(Grid.ItemSize.Large)} />
+                  <ActionPanel.Submenu title="Sett Antall Kolonner">
+                    {columnChoices.map((choice) => (
+                      <Action key={choice} title={choice.toString()} onAction={() => setColumns(choice)} />
+                    ))}
                   </ActionPanel.Submenu>
                 </ActionPanel>
               }
