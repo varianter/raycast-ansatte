@@ -68,31 +68,31 @@ export default function Command() {
                 <ActionPanel>
                   <Action.CopyToClipboard
                     content={employee.email}
-                    title="Kopier E-Post"
+                    title="Kopier e-post"
                     shortcut={{ modifiers: ["cmd"], key: "e" }}
                   />
                   <Action.CopyToClipboard
                     content={employee.name}
-                    title="Kopier Navn"
+                    title="Kopier navn"
                     shortcut={{ modifiers: ["cmd"], key: "n" }}
                   />
                   {employee.telephone != null && (
                     <Action.CopyToClipboard
                       content={employee.telephone || ""}
-                      title="Kopier Telefonnummer"
+                      title="Kopier telefonnummer"
                       shortcut={{ modifiers: ["cmd"], key: "t" }}
                     />
                   )}
                   <Action.CopyToClipboard
                     content={employee.imageUrl}
-                    title="Kopier Bilde"
+                    title="Kopier bilde"
                     shortcut={{ modifiers: ["cmd"], key: "b" }}
                     onCopy={async (content) => {
                       const image = await downloadTempImage(content.toString(), employee.name);
                       Clipboard.copy({ file: image });
                     }}
                   />
-                  <ActionPanel.Submenu title="Sett Antall Kolonner">
+                  <ActionPanel.Submenu title="Sett antall kolonner">
                     {columnChoices.map((choice) => (
                       <Action key={choice} title={choice.toString()} onAction={() => setColumns(choice)} />
                     ))}
