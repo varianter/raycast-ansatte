@@ -15,7 +15,7 @@ const BASE_URL = "https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net";
 const offices = ["Alle", "Trondheim", "Oslo", "Bergen", "Stockholm"] as const;
 type Office = (typeof offices)[number];
 
-const columnChoices = [1, 2, 3, 4, 5, 6, 7, 8] as const;
+const columnChoices = [3, 4, 5, 6] as const;
 type Columns = (typeof columnChoices)[number];
 
 export default function Command() {
