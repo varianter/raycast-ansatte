@@ -67,22 +67,22 @@ export default function Command() {
                 <ActionPanel>
                   <Action.CopyToClipboard
                     content={employee.email}
-                    title="Kopier E-Post Til Utklippstavle"
+                    title="Kopier e-post til utklippstavle"
                     shortcut={{ modifiers: ["cmd"], key: "e" }}
                   />
                   <Action.CopyToClipboard
                     content={employee.name}
-                    title="Kopier Navn Til Utklippstavle"
+                    title="Kopier navn til utklippstavle"
                     shortcut={{ modifiers: ["cmd"], key: "n" }}
                   />
                   {employee.telephone != null && (
                     <Action.CopyToClipboard
                       content={employee.telephone || ""}
-                      title="Kopier Telefonnummer Til Utklippstavle"
+                      title="Kopier telefonnummer til utklippstavle"
                       shortcut={{ modifiers: ["cmd"], key: "t" }}
                     />
                   )}
-                  <ActionPanel.Submenu title="Sett Antall Kolonner">
+                  <ActionPanel.Submenu title="Sett antall kolonner">
                     {columnChoices.map((choice) => (
                       <Action key={choice} title={choice.toString()} onAction={() => setColumns(choice)} />
                     ))}
