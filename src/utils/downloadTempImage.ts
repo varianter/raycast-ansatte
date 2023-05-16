@@ -16,9 +16,9 @@ export default async function downloadTempImage(url: string, name?: string) {
 
   let tempyOpt: FileOptions;
   if (name) {
-    tempyOpt = { name };
+    tempyOpt = { name: `${name}.png` };
   } else {
-    tempyOpt = { extension: ".png" };
+    tempyOpt = { name: "image.png" };
   }
 
   let file: string;
