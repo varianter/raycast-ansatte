@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { ActionPanel, Action, Grid, showToast, Toast } from "@raycast/api";
+import { ActionPanel, Action, Grid, showToast, Toast, Clipboard } from "@raycast/api";
 import { useCachedState, useFetch } from "@raycast/utils";
+import downloadTempImage from "./utils/downloadTempImage";
 
 type EmployeeItem = {
   name: string;
@@ -67,22 +68,31 @@ export default function Command() {
                 <ActionPanel>
                   <Action.CopyToClipboard
                     content={employee.email}
-                    title="Kopier E-Post Til Utklippstavle"
+                    title="Kopier e-post"
                     shortcut={{ modifiers: ["cmd"], key: "e" }}
                   />
                   <Action.CopyToClipboard
                     content={employee.name}
-                    title="Kopier Navn Til Utklippstavle"
+                    title="Kopier navn"
                     shortcut={{ modifiers: ["cmd"], key: "n" }}
                   />
                   {employee.telephone != null && (
                     <Action.CopyToClipboard
                       content={employee.telephone || ""}
-                      title="Kopier Telefonnummer Til Utklippstavle"
+                      title="Kopier telefonnummer"
                       shortcut={{ modifiers: ["cmd"], key: "t" }}
                     />
                   )}
-                  <ActionPanel.Submenu title="Sett Antall Kolonner">
+                  <Action.CopyToClipboard
+                    content={employee.imageUrl}
+                    title="Kopier bilde"
+                    shortcut={{ modifiers: ["cmd"], key: "b" }}
+                    onCopy={async (content) => {
+                      const image = await downloadTempImage(content.toString(), employee.name);
+                      Clipboard.copy({ file: image });
+                    }}
+                  />
+                  <ActionPanel.Submenu title="Sett antall kolonner">
                     {columnChoices.map((choice) => (
                       <Action key={choice} title={choice.toString()} onAction={() => setColumns(choice)} />
                     ))}
