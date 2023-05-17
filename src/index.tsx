@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ActionPanel, Action, Grid, showToast, Toast, Clipboard } from "@raycast/api";
 import { useCachedState, useFetch } from "@raycast/utils";
 import downloadTempImage from "./utils/downloadTempImage";
@@ -9,6 +9,7 @@ type EmployeeItem = {
   telephone: string | null;
   imageUrl: string;
   officeName: string;
+  startDate: string;
 };
 
 const BASE_URL = "https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net";
@@ -22,6 +23,7 @@ type Columns = (typeof columnChoices)[number];
 export default function Command() {
   const [columns, setColumns] = useCachedState<Columns>("columns", 5);
   const [office, setOffice] = useCachedState<Office>("office", "Alle");
+  const [startDateFilter, setStartDateFilter] = useState<Date>();
 
   const { data, error, isLoading } = useFetch<{ employees: EmployeeItem[] }>(`${BASE_URL}/employees`);
 
@@ -57,6 +59,7 @@ export default function Command() {
         data?.employees
           .sort((a, b) => a.name.localeCompare(b.name))
           .filter((employee) => (office === "Alle" ? true : employee.officeName === office))
+          .filter((employee) => (startDateFilter ? new Date(employee.startDate) >= startDateFilter : true))
           .map((employee) => (
             <Grid.Item
               key={employee.name}
@@ -70,6 +73,11 @@ export default function Command() {
                     content={employee.email}
                     title="Kopier e-post"
                     shortcut={{ modifiers: ["cmd"], key: "e" }}
+                  />
+                  <Action.PickDate
+                    onChange={(date) => date !== null && setStartDateFilter(date)}
+                    title="Filtrer på startdato"
+                    shortcut={{ modifiers: ["cmd"], key: "s" }}
                   />
                   <Action.CopyToClipboard
                     content={employee.name}
