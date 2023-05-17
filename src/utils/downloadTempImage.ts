@@ -5,7 +5,9 @@ export default async function downloadTempImage(url: string, name?: string) {
   const response = await fetch(url);
 
   if (response.status !== 200) {
-    throw new Error(`File download failed. Server responded with ${response.status}`);
+    throw new Error(
+      `File download failed. Server responded with ${response.status}`
+    );
   }
 
   const data = await response.arrayBuffer();
