@@ -33,26 +33,11 @@ export default function Command() {
   const [columns, setColumns] = useCachedState<Columns>("columns", 5);
   const [office, setOffice] = useCachedState<Office>("office", "Alle");
 
-  const [employees, setEmployees] = useCachedState<EmployeeItem[]>(
-    "employees",
-    []
-  );
-
   const { data, error, isLoading } = useFetch<{ employees: EmployeeItem[] }>(
     `${BASE_URL}/employees`
   );
 
-  useEffect(() => {
-    if (data) {
-      setEmployees(
-        data.employees
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((employee) =>
-            office === "Alle" ? true : employee.officeName === office
-          )
-      );
-    }
-  }, [data, office]);
+  const employees = sortAndFilterEmployees(data?.employees ?? [], office);
 
   useEffect(() => {
     if (error) {
@@ -226,4 +211,15 @@ function Employee({ employee }: { employee: EmployeeItem }) {
       }
     />
   );
+}
+
+function sortAndFilterEmployees(
+  employees: EmployeeItem[],
+  office: Office
+): EmployeeItem[] {
+  return employees
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .filter((employee) =>
+      office === "Alle" ? true : employee.officeName === office
+    );
 }
