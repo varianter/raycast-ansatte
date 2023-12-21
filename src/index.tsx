@@ -92,6 +92,11 @@ export default function Command() {
                       Clipboard.copy({ file: image });
                     }}
                   />
+                  <Action.CopyToClipboard
+                    content={`Navn: ${employee.name}\nE-post: ${employee.email}\nTelefon: ${employee.telephone || ""}`}
+                    title="Kopier alt"
+                    shortcut={{ modifiers: ["cmd"], key: "s" }}
+                  />
                   <ActionPanel.Submenu title="Sett antall kolonner">
                     {columnChoices.map((choice) => (
                       <Action key={choice} title={choice.toString()} onAction={() => setColumns(choice)} />
