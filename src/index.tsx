@@ -14,7 +14,7 @@ type EmployeeItem = {
 
 const BASE_URL = "https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net";
 
-const offices = ["Alle", "Trondheim", "Oslo", "Bergen", "Stockholm"] as const;
+const offices = ["Alle", "Trondheim", "Oslo", "Bergen", "Stockholm", "Göteborg"] as const;
 type Office = (typeof offices)[number];
 
 const columnChoices = [3, 4, 5, 6] as const;
