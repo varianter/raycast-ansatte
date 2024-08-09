@@ -76,7 +76,7 @@ export default function Command() {
           <Grid.Item
             key={employee.name}
             content={{
-              value: { source: employee.imageUrl },
+              value: { source: employee.imageUrl ?? "" },
               tooltip: employee.name,
             }}
             title={employee.name}
