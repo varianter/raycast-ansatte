@@ -40,7 +40,7 @@ export default function Command() {
   return (
     <Grid
       columns={columns}
-      inset={Grid.Inset.Large}
+      inset={Grid.Inset.Small}
       isLoading={isLoading}
       searchBarAccessory={
         <Grid.Dropdown
