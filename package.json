@@ -3,14 +3,14 @@
   "name": "varianter",
   "title": "Varianter",
   "description": "Viser informasjon om varianter",
-  "icon": "command-icon.png",
+  "icon": "icon.png",
   "author": "adriansberg",
   "owner": "variant-as",
   "license": "MIT",
   "commands": [
     {
       "name": "index",
-      "title": "Se Ansatte",
+      "title": "Se ansatte",
       "description": "Se informasjon om ansatte",
       "mode": "view"
     }
