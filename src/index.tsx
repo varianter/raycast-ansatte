@@ -23,7 +23,14 @@ type EmployeeItem = {
 
 const BASE_URL = "https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net";
 
-const offices = ["Alle", "Trondheim", "Oslo", "Bergen", "Stockholm", "Göteborg"] as const;
+const offices = [
+  "Alle",
+  "Trondheim",
+  "Oslo",
+  "Bergen",
+  "Stockholm",
+  "Göteborg",
+] as const;
 type Office = (typeof offices)[number];
 
 const columnChoices = [3, 4, 5, 6] as const;
@@ -32,13 +39,17 @@ type Columns = (typeof columnChoices)[number];
 export default function Command() {
   const [columns, setColumns] = useCachedState<Columns>("columns", 5);
   const [office, setOffice] = useCachedState<Office>("office", "Alle");
-  const [startDateFilter, setStartDateFilter] = useState<Date>();
+  const [startDateFilter, setStartDateFilter] = useState<Date | null>(null);
 
   const { data, error, isLoading } = useFetch<{ employees: EmployeeItem[] }>(
     `${BASE_URL}/employees`
   );
 
-  const employees = sortAndFilterEmployees(data?.employees ?? [], office);
+  const employees = sortAndFilterEmployees(
+    data?.employees ?? [],
+    office,
+    startDateFilter
+  );
 
   useEffect(() => {
     if (error) {
@@ -57,6 +68,7 @@ export default function Command() {
       isLoading={isLoading}
       navigationTitle={`Viser ${employees.length} ansatte`}
       searchBarPlaceholder="Søk etter ansatt"
+      throttle
       searchBarAccessory={
         <Grid.Dropdown
           tooltip="Velg kontor"
@@ -71,8 +83,7 @@ export default function Command() {
       }
     >
       {employees.length ? (
-        employees.filter((employee) => (startDateFilter ? new Date(employee.startDate) >= startDateFilter : true))
-          .map((employee) => (
+        employees.map((employee) => (
           <Grid.Item
             key={employee.name}
             content={{
@@ -96,11 +107,16 @@ export default function Command() {
                   shortcut={{ modifiers: ["cmd"], key: "e" }}
                 />
                 <Action.PickDate
-                    onChange={(date) => date !== null && setStartDateFilter(date)}
-                    title="Filtrer på startdato"
-                    shortcut={{ modifiers: ["cmd"], key: "s" }}
-                  />
-                  <Action.CopyToClipboard
+                  type={Action.PickDate.Type.Date}
+                  onChange={(date) => {
+                    // The date set by the action has a millisecond added to it.
+                    date?.setMilliseconds(0);
+                    setStartDateFilter(date);
+                  }}
+                  title="Filtrer på startdato"
+                  shortcut={{ modifiers: ["cmd"], key: "d" }}
+                />
+                <Action.CopyToClipboard
                   content={employee.name}
                   title="Kopier navn"
                   shortcut={{ modifiers: ["cmd"], key: "n" }}
@@ -123,11 +139,13 @@ export default function Command() {
                     );
                     Clipboard.copy({ file: image });
                   }}
-                  />
-                  <Action.CopyToClipboard
-                    content={`Navn: ${employee.name}\nE-post: ${employee.email}\nTelefon: ${employee.telephone || ""}`}
-                    title="Kopier alt"
-                    shortcut={{ modifiers: ["cmd"], key: "s" }}
+                />
+                <Action.CopyToClipboard
+                  content={`Navn: ${employee.name}\nE-post: ${
+                    employee.email
+                  }\nTelefon: ${employee.telephone || ""}`}
+                  title="Kopier alt"
+                  shortcut={{ modifiers: ["cmd"], key: "s" }}
                 />
                 <ActionPanel.Submenu
                   title="Sett antall kolonner"
@@ -146,7 +164,23 @@ export default function Command() {
           />
         ))
       ) : (
-        <Grid.EmptyView title="Kunne ikke hente ansatte" />
+        <Grid.EmptyView
+          title="Kunne ikke hente ansatte"
+          actions={
+            <ActionPanel>
+              <Action.PickDate
+                type={Action.PickDate.Type.Date}
+                onChange={(date) => {
+                  // The date set by the action has a millisecond added to it.
+                  date?.setMilliseconds(0);
+                  setStartDateFilter(date);
+                }}
+                title="Filtrer på startdato"
+                shortcut={{ modifiers: ["cmd"], key: "d" }}
+              />
+            </ActionPanel>
+          }
+        />
       )}
     </Grid>
   );
@@ -227,11 +261,15 @@ function Employee({ employee }: { employee: EmployeeItem }) {
 
 function sortAndFilterEmployees(
   employees: EmployeeItem[],
-  office: Office
+  office: Office,
+  startDate: Date | null
 ): EmployeeItem[] {
   return employees
     .sort((a, b) => a.name.localeCompare(b.name))
     .filter((employee) =>
       office === "Alle" ? true : employee.officeName === office
+    )
+    .filter((employee) =>
+      startDate ? new Date(employee.startDate) >= startDate : true
     );
 }
